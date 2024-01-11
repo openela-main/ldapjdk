@@ -6,7 +6,7 @@ Name:             ldapjdk
 
 # Upstream version number:
 %global           major_version 5
-%global           minor_version 3
+%global           minor_version 4
 %global           update_version 0
 
 # Downstream release number:
@@ -63,7 +63,7 @@ BuildRequires:    %{java_devel}
 BuildRequires:    javapackages-local
 BuildRequires:    slf4j
 BuildRequires:    slf4j-jdk14
-BuildRequires:    jss = 5.3
+BuildRequires:    jss = 5.4
 
 %description
 The Mozilla LDAP SDKs enable you to write applications which access,
@@ -79,7 +79,7 @@ Requires:         %{java_headless}
 Requires:         jpackage-utils >= 0:1.5
 Requires:         slf4j
 Requires:         slf4j-jdk14
-Requires:         jss = 5.3
+Requires:         jss = 5.4
 
 Obsoletes:        ldapjdk < %{version}-%{release}
 Provides:         ldapjdk = %{version}-%{release}
@@ -159,6 +159,9 @@ export JAVA_HOME=%{java_home}
 
 ################################################################################
 %changelog
+* Mon Jun 05 2023 Red Hat PKI Team <rhcs-maint@redhat.com> - 5.4.0-1
+- Rebase to LDAP SDK 5.4.0
+
 * Fri Feb 10 2023 Red Hat PKI Team <rhcs-maint@redhat.com> - 5.3.0-1
 - Rebase to LDAP SDK 5.3.0
 
