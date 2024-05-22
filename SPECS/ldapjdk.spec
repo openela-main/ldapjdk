@@ -2,16 +2,24 @@
 Name:             ldapjdk
 ################################################################################
 
+%global           product_id idm-ldapjdk
+
+# Upstream version number:
+%global           major_version 4
+%global           minor_version 24
+%global           update_version 0
+
 Summary:          LDAP SDK
-URL:              http://www.dogtagpki.org/
+URL:              https://github.com/dogtagpki/ldap-sdk
 License:          MPLv1.1 or GPLv2+ or LGPLv2+
 
 BuildArch:        noarch
 
 # For development (i.e. unsupported) releases, use x.y.z-0.n.<phase>.
 # For official (i.e. supported) releases, use x.y.z-r where r >=1.
-Version:          4.23.0
-Release:          1%{?_timestamp}%{?_commit_id}%{?dist}
+%global           release_number 1
+Version:          %{major_version}.%{minor_version}.%{update_version}
+Release:          %{release_number}%{?_timestamp}%{?_commit_id}%{?dist}
 #global           _phase -alpha1
 
 %global spname		ldapsp
@@ -56,32 +64,50 @@ BuildRequires:    %{java_devel}
 BuildRequires:    javapackages-local
 BuildRequires:    slf4j
 BuildRequires:    slf4j-jdk14
-BuildRequires:    jss >= 4.9.0, jss < 5.0.0
+
+BuildRequires:    jss >= 4.11.0, jss < 5.0.0
+
+%description
+The Mozilla LDAP SDKs enable you to write applications which access,
+manage, and update the information stored in an LDAP directory.
 
 ################################################################################
-# Runtime Dependencies
+%package -n %{product_id}
 ################################################################################
+
+Summary:          LDAP SDK
 
 Requires:         %{java_headless}
 Requires:         jpackage-utils >= 0:1.5
 Requires:         slf4j
 Requires:         slf4j-jdk14
-Requires:         jss >= 4.9.0, jss < 5.0.0
 
-%description
+Requires:         jss >= 4.11.0, jss < 5.0.0
+
+Obsoletes:        ldapjdk < %{version}-%{release}
+Provides:         ldapjdk = %{version}-%{release}
+Provides:         ldapjdk = %{major_version}.%{minor_version}
+Provides:         %{product_id} = %{major_version}.%{minor_version}
+
+%description -n %{product_id}
 The Mozilla LDAP SDKs enable you to write applications which access,
 manage, and update the information stored in an LDAP directory.
 
 %license docs/ldapjdk/license.txt
 
 ################################################################################
-%package javadoc
+%package -n %{product_id}-javadoc
 ################################################################################
 
-Summary:        Javadoc for %{name}
+Summary:          Javadoc for LDAP SDK
 
-%description javadoc
-Javadoc for %{name}
+Obsoletes:        ldapjdk-javadoc < %{version}-%{release}
+Provides:         ldapjdk-javadoc = %{version}-%{release}
+Provides:         ldapjdk-javadoc = %{major_version}.%{minor_version}
+Provides:         %{product_id}-javadoc = %{major_version}.%{minor_version}
+
+%description -n %{product_id}-javadoc
+Javadoc for LDAP SDK
 
 ################################################################################
 %prep
@@ -112,7 +138,7 @@ popd
 ################################################################################
 
 install -d -m 755 $RPM_BUILD_ROOT%{_javadir}
-install -m 644 java-sdk/dist/packages/%{name}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}.jar
+install -m 644 java-sdk/dist/packages/ldapjdk.jar $RPM_BUILD_ROOT%{_javadir}/ldapjdk.jar
 install -m 644 java-sdk/dist/packages/%{spname}.jar $RPM_BUILD_ROOT%{_javadir}/%{spname}.jar
 install -m 644 java-sdk/dist/packages/%{filtname}.jar $RPM_BUILD_ROOT%{_javadir}/%{filtname}.jar
 install -m 644 java-sdk/dist/packages/%{beansname}.jar $RPM_BUILD_ROOT%{_javadir}/%{beansname}.jar
@@ -123,14 +149,14 @@ install -pm 644 java-sdk/ldapfilter/pom.xml %{buildroot}%{_mavenpomdir}/JPP-ldap
 install -pm 644 java-sdk/ldapbeans/pom.xml %{buildroot}%{_mavenpomdir}/JPP-ldapbeans.pom
 install -pm 644 java-sdk/ldapsp/pom.xml %{buildroot}%{_mavenpomdir}/JPP-ldapsp.pom
 
-install -d -m 755 $RPM_BUILD_ROOT%{_javadocdir}/%{name}
-cp -r java-sdk/dist/doc/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}
+install -d -m 755 $RPM_BUILD_ROOT%{_javadocdir}/ldapjdk
+cp -r java-sdk/dist/doc/* $RPM_BUILD_ROOT%{_javadocdir}/ldapjdk
 
 ################################################################################
-%files
+%files -n %{product_id}
 ################################################################################
 
-%{_javadir}/%{name}.jar
+%{_javadir}/ldapjdk.jar
 %{_javadir}/%{spname}*.jar
 %{_javadir}/%{filtname}*.jar
 %{_javadir}/%{beansname}*.jar
@@ -140,14 +166,20 @@ cp -r java-sdk/dist/doc/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}
 %{_mavenpomdir}/JPP-ldapbeans.pom
 
 ################################################################################
-%files javadoc
+%files -n %{product_id}-javadoc
 ################################################################################
 
-%dir %{_javadocdir}/%{name}
-%{_javadocdir}/%{name}/*
+%dir %{_javadocdir}/ldapjdk
+%{_javadocdir}/ldapjdk/*
 
 ################################################################################
 %changelog
+* Thu Feb 08 2024 Red Hat PKI Team <rhcs-maint@redhat.com> 4.24.0-1
+- Rebase to LDAP SDK 4.24.0
+
+* Tue Jan 16 2024 Red Hat PKI Team <rhcs-maint@redhat.com> 4.24.0-0.1
+- Rebase to LDAP SDK 4.24.0-alpha1
+
 * Mon Jul 26 2021 Red Hat PKI Team <rhcs-maint@redhat.com> 4.23.0-1
 - Rebase to LDAP SDK 4.23.0
 
