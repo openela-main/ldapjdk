@@ -2,11 +2,13 @@
 Name:             ldapjdk
 ################################################################################
 
-%global           product_id idm-ldapjdk
+# Note: This is required for IdM. Don't remove or merge upstream.
+%global           vendor_id idm
+%global           product_id %{vendor_id}-ldapjdk
 
 # Upstream version number:
 %global           major_version 5
-%global           minor_version 5
+%global           minor_version 6
 %global           update_version 0
 
 # Downstream release number:
@@ -25,7 +27,7 @@ Name:             ldapjdk
 
 Summary:          LDAP SDK
 URL:              https://github.com/dogtagpki/ldap-sdk
-License:          MPL-1.1 or GPL-2.0-or-later or LGPL-2.1-or-later
+License:          MPL-1.1 OR GPL-2.0-or-later OR LGPL-2.1-or-later
 Version:          %{major_version}.%{minor_version}.%{update_version}
 Release:          %{release_number}%{?phase:.}%{?phase}%{?timestamp:.}%{?timestamp}%{?commit_id:.}%{?commit_id}%{?dist}
 
@@ -53,9 +55,26 @@ ExclusiveArch:    %{java_arches} noarch
 # Java
 ################################################################################
 
+# use Java 17 on Fedora 39 or older and RHEL 9 or older
+# otherwise, use Java 21
+
+# maven-local is a subpackage of javapackages-tools
+
+%if 0%{?fedora} && 0%{?fedora} <= 39 || 0%{?rhel} && 0%{?rhel} <= 9
+
 %define java_devel java-17-openjdk-devel
 %define java_headless java-17-openjdk-headless
 %define java_home %{_jvmdir}/jre-17-openjdk
+%define maven_local maven-local-openjdk17
+
+%else
+
+%define java_devel java-21-openjdk-devel
+%define java_headless java-21-openjdk-headless
+%define java_home %{_jvmdir}/jre-21-openjdk
+%define maven_local maven-local
+
+%endif
 
 ################################################################################
 # Build Dependencies
@@ -63,10 +82,10 @@ ExclusiveArch:    %{java_arches} noarch
 
 BuildRequires:    ant
 BuildRequires:    %{java_devel}
-BuildRequires:    maven-local
+BuildRequires:    %{maven_local}
 BuildRequires:    mvn(org.slf4j:slf4j-api)
 BuildRequires:    mvn(org.slf4j:slf4j-jdk14)
-BuildRequires:    mvn(org.dogtagpki.jss:jss-base) >= 5.5.0
+BuildRequires:    mvn(org.dogtagpki.jss:jss-base) >= 5.6.0
 
 %description
 The Mozilla LDAP SDKs enable you to write applications which access,
@@ -81,7 +100,7 @@ Summary:          LDAP SDK
 Requires:         %{java_headless}
 Requires:         mvn(org.slf4j:slf4j-api)
 Requires:         mvn(org.slf4j:slf4j-jdk14)
-Requires:         mvn(org.dogtagpki.jss:jss-base) >= 5.5.0
+Requires:         mvn(org.dogtagpki.jss:jss-base) >= 5.6.0
 
 Obsoletes:        ldapjdk < %{version}-%{release}
 Provides:         ldapjdk = %{version}-%{release}
@@ -160,6 +179,12 @@ ln -sf %{name}/ldaptools.pom %{buildroot}%{_mavenpomdir}/JPP-ldaptools.pom
 
 ################################################################################
 %changelog
+* Thu Feb 13 2025 Red Hat PKI Team <rhcs-maint@redhat.com> - 5.6.0-1
+- Rebase to LDAP SDK 5.6.0
+
+* Wed Dec 04 2024 Red Hat PKI Team <rhcs-maint@redhat.com> - 5.6.0-alpha1
+- Rebase to LDAP SDK 5.6.0-alpha1
+
 * Wed Feb 21 2024 Red Hat PKI Team <rhcs-maint@redhat.com> - 5.5.0-1
 - Rebase to LDAP SDK 5.5.0
 
